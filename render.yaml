@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: mlquest-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DB_PATH
+        value: /var/data/mlquest_v2.db
+      # Set this after creating frontend URL:
+      # - key: FRONTEND_URL
+      #   value: https://mlquest-web.onrender.com
+    disk:
+      name: mlquest-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: mlquest-web
+    runtime: static
+    rootDir: .
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      # Set this to your real API service URL:
+      # - key: VITE_API_URL
+      #   value: https://mlquest-api.onrender.com
