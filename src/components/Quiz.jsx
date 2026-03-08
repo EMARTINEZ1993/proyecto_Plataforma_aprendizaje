@@ -31,6 +31,14 @@ export default function Quiz({ user, onUpdateUser }) {
         }
     }, [currentQuestionIndex]);
 
+    useEffect(() => {
+        if (!feedback) return;
+        const timeoutId = setTimeout(() => {
+            setFeedback(null);
+        }, 1500);
+        return () => clearTimeout(timeoutId);
+    }, [feedback]);
+
     const handleAnswer = async (index) => {
         if (answered) return;
 
@@ -171,7 +179,7 @@ export default function Quiz({ user, onUpdateUser }) {
                 </div>
 
                 {feedback && (
-                    <div className={`feedback ${feedback.type}`}>
+                    <div className={`feedback quiz-toast ${feedback.type}`}>
                         {feedback.type === 'correct' ? '✅' : '❌'} {feedback.msg}
                     </div>
                 )}
@@ -185,3 +193,4 @@ export default function Quiz({ user, onUpdateUser }) {
         </div>
     );
 }
+
