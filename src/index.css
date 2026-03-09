@@ -1324,6 +1324,224 @@ th {
     letter-spacing: 1px;
 }
 
+/* TeacherDashboard polish */
+.teacher-dashboard {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 22px 20px 34px;
+}
+
+.teacher-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.teacher-title {
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+    color: var(--accent-cyan);
+    font-weight: 800;
+}
+
+.teacher-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.teacher-welcome {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 999px;
+    padding: 6px 10px;
+}
+
+.teacher-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.teacher-kpi-card {
+    min-height: 106px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 18px;
+}
+
+.teacher-kpi-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 8px;
+}
+
+.teacher-kpi-value {
+    font-size: clamp(1.35rem, 2.3vw, 2rem);
+    line-height: 1;
+    font-weight: 800;
+    color: var(--accent-cyan);
+}
+
+.teacher-kpi-value-small {
+    font-size: clamp(1rem, 1.7vw, 1.35rem);
+    color: var(--text-primary);
+}
+
+.teacher-filters {
+    margin-bottom: 14px;
+}
+
+.teacher-filter-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.teacher-filter-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.teacher-export-btn {
+    min-height: 42px;
+    white-space: nowrap;
+}
+
+.teacher-table-wrap {
+    padding: 12px;
+}
+
+.teacher-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.teacher-table th,
+.teacher-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.teacher-table tbody tr:hover {
+    background: rgba(34, 211, 238, 0.06);
+}
+
+.teacher-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.teacher-sortable:hover {
+    color: #67e8f9;
+}
+
+.teacher-name {
+    font-weight: 700;
+}
+
+.teacher-points {
+    font-weight: 700;
+    color: #fef08a;
+}
+
+.teacher-empty {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 18px 10px;
+}
+
+.teacher-reset-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+    white-space: nowrap;
+}
+
+.teacher-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.teacher-pagination-text {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.teacher-pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.teacher-page-indicator {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 8px;
+    padding: 7px 10px;
+}
+
+@media (max-width: 1060px) {
+    .teacher-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .teacher-filter-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .teacher-export-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .teacher-dashboard {
+        padding: 14px 12px 24px;
+    }
+
+    .teacher-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-pagination {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .teacher-pagination-controls {
+        justify-content: space-between;
+    }
+}
+
 .register-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
