@@ -20,7 +20,7 @@ print("Conexión con Google Drive en Colab establecida ✅")`
     { 
         id: 2, 
         name: "Paso 3: Verificar Dataset", 
-        price: 75, 
+        price: 1, 
         icon: "📂", 
         description: "Script para verificar la estructura de carpetas y contar imágenes por categoría.", 
         code: `#✅ Paso 3: Verifica que tu carpeta con fotos existe
@@ -80,7 +80,7 @@ else:
     { 
         id: 3, 
         name: "Paso 4: Cargar Imágenes", 
-        price: 100, 
+        price: 1, 
         icon: "🖼️", 
         description: "Lógica completa de carga, redimensionamiento y normalización de imágenes.", 
         code: `#✅ Paso 4: Cargar y etiquetar automáticamente las imágenes
@@ -161,7 +161,7 @@ print(f"Dimensiones de los datos: {datos.shape}")`
     { 
         id: 4, 
         name: "Paso 5: Split Train/Test", 
-        price: 80, 
+        price: 1, 
         icon: "✂️", 
         description: "Divide los datos en conjuntos de entrenamiento y prueba.", 
         code: `#✅ Paso 5: Separar datos de entrenamiento y prueba
@@ -191,7 +191,7 @@ print(f"Prueba: {len(x_test)} imágenes")`
     { 
         id: 5, 
         name: "Paso 6: Data Augmentation", 
-        price: 120, 
+        price: 1, 
         icon: "🔄", 
         description: "Aumenta el dataset generando variaciones de las imágenes.", 
         code: `#✅ Paso 6: Crear el modelo
@@ -314,7 +314,7 @@ print("\nEl modelo está configurado para clasificar entre 2 clases.")`
     { 
         id: 6, 
         name: "Paso 7: Modelo CNN", 
-        price: 200, 
+        price: 1, 
         icon: "🧠", 
         description: "Arquitectura de Red Neuronal Convolucional (CNN).", 
         code: `#✅ Paso 7: Entrenar el modelo
@@ -387,7 +387,7 @@ print(f"Nivel de sobreajuste: {sobreajuste:.2%}")`
     { 
         id: 7, 
         name: "Paso 8: Compilar", 
-        price: 90, 
+        price: 1, 
         icon: "⚙️", 
         description: "Configuración del optimizador y función de pérdida.", 
         code: `##✅ Paso 8. Evaluar el Modelo
@@ -466,7 +466,7 @@ print(classification_report(y_test, y_pred, target_names=categorias))
     { 
         id: 9, 
         name: "Paso 9: Guardar El Modelo Entrenado", 
-        price: 110, 
+        price: 1, 
         icon: "📊", 
         description: "Matriz de confusión y reporte de clasificación.", 
         code: `# =========================================================
@@ -505,7 +505,7 @@ print("Modelo guardado correctamente.")`
     { 
         id: 10, 
         name: "Paso 10: Cargar modelo pre-entrenado (Opcional)", 
-        price: 60, 
+        price: 1, 
         icon: "💾", 
         description: "Guarda el modelo entrenado en Google Drive.", 
         code: `##✅ Paso 10: Cargar modelo pre-entrenado (Opcional)
@@ -642,7 +642,7 @@ else:
     { 
         id: 12, 
         name: "Paso 11: Predecir si una imagen eres tú", 
-        price: 130, 
+        price: 1, 
         icon: "🔮", 
         description: "Prueba el modelo con una imagen individual.", 
         code: `##✅ Paso 11: Predecir si una imagen eres tú
@@ -745,7 +745,7 @@ if uploaded:
     {
         id: 13, 
         name: "Paso 12: Predecir con Cámara 📸", 
-        price: 150, 
+        price: 1, 
         icon: "📸", 
         description: "Utiliza la cámara para capturar una imagen y predecir si eres tú.", 
         code: `import cv2
