@@ -2,7 +2,7 @@ export const shopItems = [
     { 
         id: 1, 
         name: "Paso 2: Conexión Drive", 
-        price: 50, 
+        price: 10, 
         icon: "☁️", 
         description: "Conecta Google Drive en Colab para acceder a tus archivos.",
         code: `# =========================================================

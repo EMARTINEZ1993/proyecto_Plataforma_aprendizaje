@@ -193,29 +193,29 @@ app.post('/api/quiz-history', verifyToken, (req, res) => {
 // Shop: Buy Item
 app.post('/api/shop/buy', verifyToken, (req, res) => {
     const { itemId, cost } = req.body;
-    
-    // Check points first
-    db.get("SELECT points FROM users WHERE id = ?", [req.userId], (err, row) => {
-        if (err || !row) return res.status(500).json({ message: 'Error checking points.' });
-        
-        if (row.points < cost) return res.status(400).json({ message: 'Not enough points.' });
-        
-        // Deduct points
-        const newPoints = row.points - cost;
-        db.run("UPDATE users SET points = ? WHERE id = ?", [newPoints, req.userId], (err) => {
-            if (err) return res.status(500).json({ message: 'Error deducting points.' });
-            
-            // Add item
-            // Check if already owned
-            db.get("SELECT * FROM user_items WHERE user_id = ? AND item_id = ?", [req.userId, itemId], (err, item) => {
-                 if (item) {
-                     // Already owned, just refund? Or just do nothing.
-                     // But we already deducted points.
-                     // Assuming frontend prevents this.
-                 }
-                 
-                 db.run("INSERT INTO user_items (user_id, item_id) VALUES (?, ?)", [req.userId, itemId], (err) => {
-                    if (err) return res.status(500).json({ message: 'Error adding item.' });
+    const normalizedItemId = String(itemId);
+    const numericCost = Number(cost);
+
+    if (!normalizedItemId || !Number.isFinite(numericCost) || numericCost <= 0) {
+        return res.status(400).json({ message: 'Invalid purchase payload.' });
+    }
+
+    // Check if already owned before deducting points
+    db.get("SELECT 1 FROM user_items WHERE user_id = ? AND item_id = ?", [req.userId, normalizedItemId], (ownErr, owned) => {
+        if (ownErr) return res.status(500).json({ message: 'Error checking ownership.' });
+        if (owned) return res.status(409).json({ message: 'Item already owned.' });
+
+        // Check points
+        db.get("SELECT points FROM users WHERE id = ?", [req.userId], (err, row) => {
+            if (err || !row) return res.status(500).json({ message: 'Error checking points.' });
+            if (row.points < numericCost) return res.status(400).json({ message: 'Not enough points.' });
+
+            const newPoints = row.points - numericCost;
+            db.run("UPDATE users SET points = ? WHERE id = ?", [newPoints, req.userId], (updateErr) => {
+                if (updateErr) return res.status(500).json({ message: 'Error deducting points.' });
+
+                db.run("INSERT INTO user_items (user_id, item_id) VALUES (?, ?)", [req.userId, normalizedItemId], (insertErr) => {
+                    if (insertErr) return res.status(500).json({ message: 'Error adding item.' });
                     res.status(200).json({ message: 'Item purchased.', newPoints });
                 });
             });

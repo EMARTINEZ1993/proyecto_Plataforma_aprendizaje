@@ -20,7 +20,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                 headers: { Authorization: `Bearer ${token}` }
             });
             const ownedMap = {};
-            res.data.forEach(id => ownedMap[id] = true);
+            res.data.forEach(id => ownedMap[String(id)] = true);
             setOwnedItems(ownedMap);
             if (ownedMap.theme_matrix) {
                 onMatrixUnlock?.();
@@ -35,7 +35,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
     const handleBuy = async (item) => {
         if (user.points < item.price) {
             soundManager.play('incorrect');
-            setMsg({ type: 'error', text: 'No tienes suficientes puntos 😢' });
+            setMsg({ type: 'error', text: 'No tienes suficientes puntos.' });
             setTimeout(() => setMsg(null), 3000);
             return;
         }
@@ -43,26 +43,26 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
         try {
             const token = localStorage.getItem('token');
             const res = await api.post('/api/shop/buy', {
-                itemId: item.id,
+                itemId: String(item.id),
                 cost: item.price
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             soundManager.play('buy');
-            setMsg({ type: 'success', text: `¡Has comprado ${item.name}!` });
+            setMsg({ type: 'success', text: `Has comprado ${item.name}.` });
             
-            setOwnedItems(prev => ({ ...prev, [item.id]: true }));
+            setOwnedItems(prev => ({ ...prev, [String(item.id)]: true }));
             if (item.id === 'theme_matrix') {
                 onMatrixUnlock?.();
             }
             
-            onUpdateUser({ ...user, points: user.points - item.price });
+            onUpdateUser({ ...user, points: res.data?.newPoints ?? (user.points - item.price) });
             
             setTimeout(() => setMsg(null), 3000);
         } catch (error) {
             console.error("Purchase error:", error);
-            setMsg({ type: 'error', text: 'Error al procesar la compra.' });
+            setMsg({ type: 'error', text: error?.response?.data?.message || 'Error al procesar la compra.' });
         }
     };
 
@@ -80,7 +80,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
         if (selectedItem) {
             navigator.clipboard.writeText(selectedItem.code);
             soundManager.play('correct');
-            alert('¡Código copiado!');
+            alert('Codigo copiado.');
         }
     };
 
@@ -89,9 +89,9 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
     return (
         <div className="shop-container">
             <div className="shop-header">
-                <h1> Tienda de Código</h1>
+                <h1>Tienda de Codigo</h1>
                 <div className="user-points">
-                    💎 {user.points}
+                    Puntos: {user.points}
                 </div>
             </div>
 
@@ -101,7 +101,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
 
             <div className="shop-grid">
                 {shopItems.map(item => {
-                    const isOwned = ownedItems[item.id];
+                    const isOwned = ownedItems[String(item.id)];
                     const canAfford = user.points >= item.price;
                     const isTheme = item.id === 'theme_matrix';
 
@@ -114,11 +114,11 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                             {isOwned ? (
                                 isTheme ? (
                                     <button className="buy-btn owned" onClick={() => onEquipTheme('matrix')}>
-                                        🖥️ Activar Tema
+                                        Activar tema
                                     </button>
                                 ) : (
                                     <button className="buy-btn owned" onClick={() => handleViewCode(item)}>
-                                        👁️ Ver Código
+                                        Ver codigo
                                     </button>
                                 )
                             ) : (
@@ -127,7 +127,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                                     onClick={() => canAfford && handleBuy(item)}
                                     disabled={!canAfford}
                                 >
-                                    💎 {item.price}
+                                    {item.price} puntos
                                 </button>
                             )}
                         </div>
@@ -140,7 +140,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                     <div className="modal-content" onClick={e => e.stopPropagation()} style={{ background: '#0f172a', border: '1px solid #38bdf8', maxWidth: '800px', width: '95%', maxHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column', padding: '0', borderRadius: '12px', overflow: 'hidden', margin: '0 auto' }}>
                         <div className="modal-header" style={{ padding: '15px 20px', borderBottom: '1px solid #334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', margin: 0 }}>{selectedItem.name}</h3>
-                            <button onClick={closeModal} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', color: '#94a3b8', cursor: 'pointer' }}>×</button>
+                            <button onClick={closeModal} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', color: '#94a3b8', cursor: 'pointer' }}>x</button>
                         </div>
                         <div style={{ padding: '20px', background: '#1e293b', overflowY: 'auto', flex: '1 1 auto' }}>
                             <p style={{ color: '#94a3b8', marginBottom: '15px', fontSize: '0.9rem' }}>{selectedItem.description}</p>
@@ -151,7 +151,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                             </div>
                         </div>
                         <div style={{ padding: '15px 20px', background: '#0f172a', borderTop: '1px solid #334155', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                            <button className="btn" onClick={copyCode} style={{ background: '#0ea5e9', color: 'white', padding: '8px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600' }}>📋 Copiar</button>
+                            <button className="btn" onClick={copyCode} style={{ background: '#0ea5e9', color: 'white', padding: '8px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600' }}>Copiar</button>
                             <button className="btn" onClick={closeModal} style={{ background: 'transparent', color: '#94a3b8', padding: '8px 20px', borderRadius: '6px', border: '1px solid #475569', cursor: 'pointer', fontWeight: '600' }}>Cerrar</button>
                         </div>
                     </div>
@@ -160,4 +160,3 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
         </div>
     );
 }
-
