@@ -111,11 +111,51 @@ app.post('/api/login', (req, res) => {
 
 // User Data Routes
 app.get('/api/user', verifyToken, (req, res) => {
-    db.get("SELECT id, username, userid, useremail, userficha, role, points, level, energy, streak, max_streak, total_answered, total_correct FROM users WHERE id = ?", [req.userId], (err, user) => {
+    db.get("SELECT id, username, userid, useremail, userficha, role, points, level, energy, streak, max_streak, total_answered, total_correct, quiz_order, quiz_index FROM users WHERE id = ?", [req.userId], (err, user) => {
         if (err) return res.status(500).json({ message: 'Error finding user.' });
         if (!user) return res.status(404).json({ message: 'User not found.' });
         res.status(200).json(user);
     });
+});
+
+// Quiz State Routes (persist order/index between sessions/devices)
+app.get('/api/quiz-state', verifyToken, (req, res) => {
+    db.get("SELECT quiz_order, quiz_index FROM users WHERE id = ?", [req.userId], (err, row) => {
+        if (err) return res.status(500).json({ message: 'Error fetching quiz state.' });
+        if (!row) return res.status(404).json({ message: 'User not found.' });
+
+        let order = null;
+        if (row.quiz_order) {
+            try {
+                const parsed = JSON.parse(row.quiz_order);
+                if (Array.isArray(parsed)) order = parsed;
+            } catch (parseErr) {
+                order = null;
+            }
+        }
+
+        res.status(200).json({
+            order,
+            index: Number.isInteger(row.quiz_index) ? row.quiz_index : 0
+        });
+    });
+});
+
+app.post('/api/quiz-state', verifyToken, (req, res) => {
+    const { order, index } = req.body;
+
+    if (!Array.isArray(order) || !Number.isInteger(index) || index < 0) {
+        return res.status(400).json({ message: 'Invalid quiz state payload.' });
+    }
+
+    db.run(
+        "UPDATE users SET quiz_order = ?, quiz_index = ? WHERE id = ?",
+        [JSON.stringify(order), index, req.userId],
+        (err) => {
+            if (err) return res.status(500).json({ message: 'Error saving quiz state.' });
+            res.status(200).json({ message: 'Quiz state saved.' });
+        }
+    );
 });
 
 // Update Progress (Points, Level, Energy, Stats)

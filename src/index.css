@@ -674,6 +674,55 @@ header {
     }
 }
 
+.levelup-popup {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 30;
+    min-width: 210px;
+    max-width: 260px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(250, 204, 21, 0.7);
+    background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(168, 85, 247, 0.2));
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    animation: slideDown 0.25s ease-out;
+}
+
+.levelup-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #fef08a;
+    opacity: 0.95;
+    margin-bottom: 4px;
+}
+
+.levelup-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.levelup-popup-complete {
+    border-color: rgba(34, 211, 238, 0.7);
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.2));
+}
+
+@media (max-width: 768px) {
+    .levelup-popup {
+        top: 12px;
+        right: 12px;
+        min-width: 170px;
+        max-width: 210px;
+        padding: 10px 12px;
+    }
+
+    .levelup-value {
+        font-size: 17px;
+    }
+}
+
 .next-btn {
     width: 100%;
     padding: 14px;
@@ -1111,11 +1160,22 @@ header {
 /* Badges Section */
 .badges-section {
     margin-top: 40px;
+    background: var(--card-bg);
+   border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 16px;
+    padding: 30px;
 }
-
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+}
 .badges-grid-large {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
     gap: 20px;
 }
 

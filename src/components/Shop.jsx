@@ -130,13 +130,13 @@ export default function Shop({ user, onUpdateUser, onEquipTheme }) {
             </div>
 
             {selectedItem && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ background: '#0f172a', border: '1px solid #38bdf8', maxWidth: '800px', width: '95%', padding: '0', borderRadius: '12px', overflow: 'hidden' }}>
+                <div className="modal-overlay" onClick={closeModal} style={{ alignItems: 'flex-start', overflowY: 'auto', padding: '90px 16px 24px' }}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ background: '#0f172a', border: '1px solid #38bdf8', maxWidth: '800px', width: '95%', maxHeight: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column', padding: '0', borderRadius: '12px', overflow: 'hidden', margin: '0 auto' }}>
                         <div className="modal-header" style={{ padding: '15px 20px', borderBottom: '1px solid #334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h3 style={{ color: '#38bdf8', fontSize: '1.2rem', margin: 0 }}>{selectedItem.name}</h3>
                             <button onClick={closeModal} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', color: '#94a3b8', cursor: 'pointer' }}>×</button>
                         </div>
-                        <div style={{ padding: '20px', background: '#1e293b' }}>
+                        <div style={{ padding: '20px', background: '#1e293b', overflowY: 'auto', flex: '1 1 auto' }}>
                             <p style={{ color: '#94a3b8', marginBottom: '15px', fontSize: '0.9rem' }}>{selectedItem.description}</p>
                             <div style={{ background: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
                                 <pre style={{ margin: 0, padding: '20px', overflowX: 'auto', color: '#e2e8f0', fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: '1.5' }}>

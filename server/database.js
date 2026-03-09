@@ -33,6 +33,8 @@ function initDb() {
             max_streak INTEGER DEFAULT 0,
             total_answered INTEGER DEFAULT 0,
             total_correct INTEGER DEFAULT 0,
+            quiz_order TEXT,
+            quiz_index INTEGER DEFAULT 0,
             last_login DATETIME,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
@@ -49,7 +51,9 @@ function initDb() {
                 { name: 'last_login', definition: 'DATETIME' },
                 { name: 'userid', definition: 'TEXT' },
                 { name: 'useremail', definition: 'TEXT' },
-                { name: 'userficha', definition: 'TEXT' }
+                { name: 'userficha', definition: 'TEXT' },
+                { name: 'quiz_order', definition: 'TEXT' },
+                { name: 'quiz_index', definition: 'INTEGER DEFAULT 0' }
             ];
 
             const missingColumns = requiredColumns.filter((column) => !existingColumnNames.has(column.name));
