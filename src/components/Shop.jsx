@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { shopItems } from '../data/shopItems';
 import { soundManager } from '../utils/SoundManager';
 import { api } from '../utils/api';
@@ -76,11 +76,30 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
         soundManager.play('click');
     };
 
+    const normalizeCodeIndentation = (rawCode) => {
+        if (typeof rawCode !== 'string') return '';
+
+        const lines = rawCode.replace(/\r\n/g, '\n').replace(/\t/g, '    ').split('\n');
+        const nonEmptyLines = lines.filter(line => line.trim().length > 0);
+
+        if (nonEmptyLines.length === 0) return '';
+
+        const minIndent = Math.min(
+            ...nonEmptyLines.map(line => (line.match(/^ */)?.[0].length ?? 0))
+        );
+
+        return lines
+            .map(line => (line.length >= minIndent ? line.slice(minIndent) : line))
+            .join('\n')
+            .trim();
+    };
+
     const copyCode = () => {
         if (selectedItem) {
-            navigator.clipboard.writeText(selectedItem.code);
+            const cleanedCode = normalizeCodeIndentation(selectedItem.code);
+            navigator.clipboard.writeText(cleanedCode);
             soundManager.play('correct');
-            alert('Codigo copiado.');
+            alert('Código copiado.');
         }
     };
 
@@ -89,7 +108,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
     return (
         <div className="shop-container">
             <div className="shop-header">
-                <h1>Tienda de Codigo</h1>
+                <h1>Tienda de Código</h1>
                 <div className="user-points">
                     Puntos: {user.points}
                 </div>
@@ -118,7 +137,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                                     </button>
                                 ) : (
                                     <button className="buy-btn owned" onClick={() => handleViewCode(item)}>
-                                        Ver codigo
+                                        Ver código
                                     </button>
                                 )
                             ) : (
@@ -146,7 +165,7 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
                             <p style={{ color: '#94a3b8', marginBottom: '15px', fontSize: '0.9rem' }}>{selectedItem.description}</p>
                             <div style={{ background: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
                                 <pre style={{ margin: 0, padding: '20px', overflowX: 'auto', color: '#e2e8f0', fontFamily: 'monospace', fontSize: '0.85rem', lineHeight: '1.5' }}>
-                                    <code>{selectedItem.code}</code>
+                                    <code>{normalizeCodeIndentation(selectedItem.code)}</code>
                                 </pre>
                             </div>
                         </div>
@@ -160,3 +179,4 @@ export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock 
         </div>
     );
 }
+

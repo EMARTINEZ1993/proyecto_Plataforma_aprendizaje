@@ -1,48 +1,35 @@
-export const shopItems = [
-    { 
-        id: 1, 
-        name: "Paso 2: Conexión Drive", 
-        price: 10, 
-        icon: "☁️", 
-        description: "Conecta Google Drive en Colab para acceder a tus archivos.",
+﻿export const shopItems = [
+    {
+        id: 1,
+        name: "Paso 2: Conexión Drive",
+        price: 40,
+        icon: "☁️",
+        description:"Conecta Google Drive en Colab para acceder a los archivos del proyecto.",
         code: `# =========================================================
-# ☁️ CONEXIÓN CON GOOGLE DRIVE
-# Permite acceder a archivos almacenados en Google Drive
-# desde el entorno de Google Colab
+# CONEXIÓN CON GOOGLE DRIVE
 # =========================================================
 
-from google.colab import drive  # Importa la herramienta para conectar Google Drive
+from google.colab import drive
 
-drive.mount('/content/drive')  # Monta Google Drive en la ruta /content/drive dentro de Colab
+drive.mount('/content/drive')
 
-print("Conexión con Google Drive en Colab establecida ✅")` 
+print("Conexión con Google Drive establecida ✅")`
     },
-    { 
-        id: 2, 
-        name: "Paso 3: Verificar Dataset", 
-        price: 1, 
-        icon: "📂", 
-        description: "Script para verificar la estructura de carpetas y contar imágenes por categoría.", 
-        code: `#✅ Paso 3: Verifica que tu carpeta con fotos existe
-# =========================================================
-# 📂 VERIFICACIÓN DE ESTRUCTURA DEL DATASET
-# Este bloque revisa si la carpeta del dataset existe
-# y muestra las categorías (carpetas) junto con la
-# cantidad de imágenes que contiene cada una.
+    {
+        id: 2,
+        name: "Paso 3: Verificar Dataset",
+        price: 50,
+        icon: "📂",
+        description:"Verifica la estructura del dataset y cuenta las imágenes por categoría.",
+        code: `# =========================================================
+# VERIFICACIÓN DE ESTRUCTURA DEL DATASET
 # =========================================================
 
 import os
 
-# Ruta donde se encuentra el dataset en Google Drive
 ruta_fotos = '/content/drive/MyDrive/Colab Notebooks/DATASET/Reconocimiento_Facial2'
 
-
-# =========================================================
-# 🔎 Verificar si la ruta del dataset existe
-# =========================================================
 if os.path.exists(ruta_fotos):
-
-    # Obtener todas las carpetas dentro del dataset (cada carpeta representa una categoría/persona)
     carpetas = [
         d for d in os.listdir(ruta_fotos)
         if os.path.isdir(os.path.join(ruta_fotos, d))
@@ -51,38 +38,24 @@ if os.path.exists(ruta_fotos):
     print("Cantidad de carpetas encontradas:", len(carpetas))
     print("Carpetas detectadas:", carpetas)
 
-
-    # =========================================================
-    # 📊 Contar cuántos archivos hay en cada carpeta
-    # =========================================================
     print("\\nCantidad de archivos por carpeta:")
 
     for carpeta in carpetas:
-
-        # Ruta completa de la carpeta
         ruta_categoria = os.path.join(ruta_fotos, carpeta)
-
-        # Contar los archivos dentro de la carpeta
         num_archivos = len([
             nombre for nombre in os.listdir(ruta_categoria)
             if os.path.isfile(os.path.join(ruta_categoria, nombre))
         ])
-
         print(f"  - {carpeta}: {num_archivos} archivos")
-
-
-# =========================================================
-# ⚠️ Mensaje en caso de que la ruta no exista
-# =========================================================
 else:
-    print("La ruta no existe. Verifica el nombre de la carpeta.")` 
+    print("La ruta no existe. Verifica el nombre de la carpeta.")`
     },
-    { 
-        id: 3, 
-        name: "Paso 4: Cargar Imágenes", 
-        price: 1, 
-        icon: "🖼️", 
-        description: "Lógica completa de carga, redimensionamiento y normalización de imágenes.", 
+    {
+        id: 3,
+        name: "Paso 4: Cargar Imágenes",
+        price: 75,
+        icon: "🖼️",
+        description:"Carga las imágenes del dataset, las redimensiona y genera las etiquetas.",
         code: `#✅ Paso 4: Cargar y etiquetar automáticamente las imágenes
 # =========================================================
 # 📂 CARGA Y PREPROCESAMIENTO DEL DATASET DE IMÁGENES
@@ -98,16 +71,13 @@ import numpy as np
 # =========================================================
 # 🔎 Verificar que la ruta del dataset exista
 # =========================================================
-
 if not os.path.exists(ruta_fotos):
     raise ValueError("La ruta base no existe. Verifica el nombre en Drive.")
-
 
 # =========================================================
 # 📁 Detectar automáticamente las subcarpetas (categorías)
 # Cada carpeta representa una clase o persona
 # =========================================================
-
 categorias = sorted([
     carpeta for carpeta in os.listdir(ruta_fotos)
     if os.path.isdir(os.path.join(ruta_fotos, carpeta))
@@ -115,86 +85,105 @@ categorias = sorted([
 
 print("Categorías detectadas:", categorias)
 
-
 # =========================================================
 # 📊 Crear listas para almacenar datos e etiquetas
 # datos: almacenará las imágenes procesadas
 # etiquetas: guardará el índice de la categoría (0,1,2...)
 # =========================================================
-
 datos = []
 etiquetas = []
 
-# Recorrer cada categoría y sus imágenes
-for indice, categoria in enumerate(categorias):
+# =========================================================
+# 🔄 Recorrer cada categoría y cargar las imágenes
+# =========================================================
+for i, categoria in enumerate(categorias):
     ruta_categoria = os.path.join(ruta_fotos, categoria)
-    
-    # Leer imágenes de la carpeta actual
-    for nombre_imagen in os.listdir(ruta_categoria):
-        ruta_imagen = os.path.join(ruta_categoria, nombre_imagen)
-        
-        try:
-            # Leer imagen
-            img = cv2.imread(ruta_imagen)
-            
-            # Verificar si se leyó correctamente
+
+    for archivo in os.listdir(ruta_categoria):
+        if archivo.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+            img_path = os.path.join(ruta_categoria, archivo)
+            img = cv2.imread(img_path)
+
             if img is not None:
-                # Redimensionar a 32x32 píxeles (estándar para modelos simples)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = cv2.resize(img, (32, 32))
-                
-                # Convertir a array y normalizar (valores entre 0 y 1)
-                datos.append(img.astype('float32') / 255.0)
-                
-                # Guardar la etiqueta correspondiente
-                etiquetas.append(indice)
-        except Exception as e:
-            print(f"Error al procesar {nombre_imagen}: {e}")
+                img = img.astype('float32') / 255.0
 
-# Convertir listas a arrays de Numpy
-datos = np.array(datos)
-etiquetas = np.array(etiquetas)
+                datos.append(img)
+                etiquetas.append(i)
 
-print("✅ Imágenes cargadas y procesadas.")
-print(f"Total de imágenes: {len(datos)}")
-print(f"Dimensiones de los datos: {datos.shape}")` 
+# =========================================================
+# 🔢 Convertir listas a arrays de NumPy
+# =========================================================
+x = np.array(datos)
+y = np.array(etiquetas)
+
+# Compatibilidad con pasos siguientes
+datos = x
+etiquetas = y
+
+# =========================================================
+# ⚠️ Verificar que se hayan cargado imágenes
+# =========================================================
+if len(x) == 0:
+    raise ValueError("No se cargaron imágenes. Revisa el dataset.")
+
+# =========================================================
+# 📊 Información del dataset cargado
+# =========================================================
+print(f"✅ Número de imágenes cargadas: {x.shape[0]}")
+print(f"📏 Tamaño de cada imagen: {x.shape[1]}x{x.shape[2]} píxeles con {x.shape[3]} canales (RGB)")
+print(f"📝 Número de etiquetas: {y.shape[0]}")
+print(f"📊 Clases detectadas: {np.unique(y)}")`
     },
-    { 
-        id: 4, 
-        name: "Paso 5: Split Train/Test", 
-        price: 1, 
-        icon: "✂️", 
-        description: "Divide los datos en conjuntos de entrenamiento y prueba.", 
-        code: `#✅ Paso 5: Separar datos de entrenamiento y prueba
+    {
+        id: 4,
+        name: "Paso 5: Dividir datos en entrenamiento y prueba",
+        price: 100,
+        icon: "✂️",
+        description:"Divide el dataset en datos de entrenamiento y prueba.",
+        code: `# =========================================================
+#✅ Paso 5: Dividir datos en entrenamiento y prueba
+
 # =========================================================
-# ✂️ DIVISIÓN DEL DATASET (TRAIN / TEST)
-# Se separa el 80% de los datos para entrenar el modelo
-# y el 20% para evaluar su rendimiento.
+# 📊 DIVISIÓN DEL DATASET (ENTRENAMIENTO Y PRUEBA)
+# Se separan los datos en dos conjuntos:
+# - Entrenamiento: para que el modelo aprenda
+# - Prueba: para evaluar el rendimiento del modelo
 # =========================================================
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split  # Función para dividir los datos
 
-# Dividir datos
-# test_size=0.2 -> 20% para pruebas
-# stratify=etiquetas -> Mantiene la proporción de clases
+
+# Dividir el dataset
 x_train, x_test, y_train, y_test = train_test_split(
-    datos, 
-    etiquetas, 
-    test_size=0.2, 
-    random_state=42, 
-    stratify=etiquetas
+
+    x,  # Imágenes
+    y,  # Etiquetas
+
+    test_size=0.2,     # 20% de los datos se usarán para pruebas
+    random_state=42,   # Semilla para que la división sea reproducible
+    stratify=y         # Mantiene la misma proporción de clases en entrenamiento y prueba
 )
 
-print("✅ Datos divididos correctamente")
-print(f"Entrenamiento: {len(x_train)} imágenes")
-print(f"Prueba: {len(x_test)} imágenes")` 
+
+# =========================================================
+# 📈 Mostrar información de la división
+# =========================================================
+
+print("📊 División del dataset completada")
+print(f"Datos de entrenamiento: {len(x_train)} imágenes")
+print(f"Datos de prueba: {len(x_test)} imágenes")
+        `
     },
-    { 
-        id: 5, 
-        name: "Paso 6: Data Augmentation", 
-        price: 1, 
-        icon: "🔄", 
-        description: "Aumenta el dataset generando variaciones de las imágenes.", 
-        code: `#✅ Paso 6: Crear el modelo
+    {
+        id: 5,
+        name: "Paso 6: Crear el modelo",
+        price: 125,
+        icon: "🧠",
+        description:"Define la arquitectura de la red neuronal convolucional (CNN).",
+        code: `# =========================================================
+#✅ Paso 6: Crear el modelo
 # =========================================================
 # 🧠 CREACIÓN DEL MODELO DE RED NEURONAL CONVOLUCIONAL (CNN)
 # Este bloque define la arquitectura del modelo que se
@@ -309,15 +298,17 @@ print("📊 Arquitectura del modelo:\n")
 
 model.summary()
 
-print("\nEl modelo está configurado para clasificar entre 2 clases.")` 
+print("\nEl modelo está configurado para clasificar entre 2 clases.")
+        `
     },
-    { 
-        id: 6, 
-        name: "Paso 7: Modelo CNN", 
-        price: 1, 
-        icon: "🧠", 
-        description: "Arquitectura de Red Neuronal Convolucional (CNN).", 
-        code: `#✅ Paso 7: Entrenar el modelo
+    {
+        id: 6,
+        name: "Paso 7:  Entrenar el modelo",
+        price: 150,
+        icon: "🏋️‍♂️",
+        description:"Entrena el modelo usando los datos de entrenamiento.",
+        code: `# =========================================================
+#✅ Paso 7: Entrenar el modelo
 # =========================================================
 # 🚀 ENTRENAMIENTO DEL MODELO CNN
 # En este bloque se crean los generadores de datos y se
@@ -382,15 +373,17 @@ sobreajuste = train_accuracy - val_accuracy
 
 print(f"Accuracy (porcentaje de aciertos del modelo) entrenamiento: {train_accuracy:.2%}")
 print(f"Accuracy validación: {val_accuracy:.2%}")
-print(f"Nivel de sobreajuste: {sobreajuste:.2%}")` 
+print(f"Nivel de sobreajuste: {sobreajuste:.2%}")
+        `
     },
-    { 
-        id: 7, 
-        name: "Paso 8: Compilar", 
-        price: 1, 
-        icon: "⚙️", 
-        description: "Configuración del optimizador y función de pérdida.", 
-        code: `##✅ Paso 8. Evaluar el Modelo
+    {
+        id: 7,
+        name: "Paso 8: Evaluar el Modelo",
+        price: 175,
+        icon: "📊",
+        description:"Evalúa el rendimiento del modelo con métricas y matriz de confusión.",
+        code: `# =========================================================
+##✅ Paso 8. Evaluar el Modelo
 # =========================================================
 # 📊 EVALUACIÓN DEL MODELO
 # Este bloque evalúa el rendimiento del modelo utilizando
@@ -461,15 +454,16 @@ print(classification_report(y_test, y_pred, target_names=categorias))
 
 
 
-` 
+        `
     },
-    { 
-        id: 9, 
-        name: "Paso 9: Guardar El Modelo Entrenado", 
-        price: 1, 
-        icon: "📊", 
-        description: "Matriz de confusión y reporte de clasificación.", 
+    {
+        id: 9,
+        name: "Paso 9: Guardar El Modelo Entrenador",
+        price: 200,
+        icon: "💾",
+        description:"Guarda el modelo entrenado en Google Drive.",
         code: `# =========================================================
+# =========================================================
 # 💾 paso 9 GUARDAR EL MODELO ENTRENADO
 # Este bloque guarda el modelo entrenado en Google Drive
 # para poder reutilizarlo posteriormente sin necesidad
@@ -500,15 +494,17 @@ model.save(os.path.join(ruta_modelo, 'modelo_Reconocimiento_Facial.keras'))
 # ✅ Confirmación
 # =========================================================
 
-print("Modelo guardado correctamente.")` 
+print("Modelo guardado correctamente.")
+        `
     },
-    { 
-        id: 10, 
-        name: "Paso 10: Cargar modelo pre-entrenado (Opcional)", 
-        price: 1, 
-        icon: "💾", 
-        description: "Guarda el modelo entrenado en Google Drive.", 
-        code: `##✅ Paso 10: Cargar modelo pre-entrenado (Opcional)
+    {
+        id: 10,
+        name: "Paso 10: Cargar modelo pre-entrenado (Opcional)",
+        price: 200,
+        icon: "📥",
+        description:"Carga un modelo previamente entrenado desde Google Drive.",
+        code: `# =========================================================
+##✅ Paso 10: Cargar modelo pre-entrenado (Opcional)
 
 # =========================================================
 # 🧠 USO DE MODELO YA ENTRENADO
@@ -637,15 +633,16 @@ if os.path.exists(MODEL_PATH):
 else:
     print("⚠️ No se encontró el modelo. Debes ejecutar el entrenamiento primero.")
 
-` 
+`
     },
-    { 
-        id: 12, 
-        name: "Paso 11: Predecir si una imagen eres tú", 
-        price: 1, 
-        icon: "🔮", 
-        description: "Prueba el modelo con una imagen individual.", 
-        code: `##✅ Paso 11: Predecir si una imagen eres tú
+    {
+        id: 11,
+        name: " Paso 11: Predecir si una imagen eres tú",
+        price: 200,
+        icon: "🖼️",
+        description:"Predice la categoría de una imagen cargada manualmente subiendo una imagen.",
+        code: `# =========================================================
+##✅ Paso 11: Predecir si una imagen eres tú
 # =========================================================
 # 🔍 FUNCIÓN PARA PROBAR UNA IMAGEN INDIVIDUAL
 # - Predice la clase de la imagen
@@ -740,15 +737,18 @@ uploaded = files.upload()
 
 if uploaded:
     file = list(uploaded.keys())[0]
-    test_image_with_confidence(model, file, categorias)` 
+    test_image_with_confidence(model, file, categorias)
+
+        `
     },
     {
-        id: 13, 
-        name: "Paso 12: Predecir con Cámara 📸", 
-        price: 1, 
-        icon: "📸", 
-        description: "Utiliza la cámara para capturar una imagen y predecir si eres tú.", 
-        code: `import cv2
+        id: 12,
+        name: "Paso 13: Predecir Imagen usando Camara",
+        price: 200,
+        icon: "📷",
+        description: "Predice la clase de una imagen individual usando la cámara.",
+        code: `# =========================================================
+import cv2
 import numpy as np
 import base64
 from google.colab.patches import cv2_imshow
@@ -841,14 +841,17 @@ js_code = """
 display(HTML(js_code))
 
 # Registrar callback Python
-output.register_callback('notebook.processPhoto', process_photo)
-    `},
-    { 
-        id: 'theme_matrix', 
-        name: "Tema Matrix", 
-        price: 200, 
-        icon: "💊", 
-        description: "Desbloquea el tema Matrix con lluvia binaria animada.", 
-        code: "/* Matrix Theme Unlocked */" 
+output.register_callback('notebook.processPhoto', process_photo)`
+    },
+    
+    {
+        id: 'theme_matrix',
+        name: "Tema Matrix",
+        price: 200,
+        icon: "💊",
+        description: "Desbloquea el tema Matrix con lluvia binaria animada.",
+        code: "/* Matrix Theme Unlocked */"
     }
 ];
+
+
