@@ -7,11 +7,14 @@ import Navigation from './components/Navigation';
 import Quiz from './components/Quiz';
 import Shop from './components/Shop';
 import Stats from './components/Stats';
+import Footer from './components/Footer';
+import { api } from './utils/api';
 import './App.css'; 
 
 const MainLayout = () => {
-    const { user, logout, updateUser } = useContext(AuthContext);
+    const { user, token, logout, updateUser } = useContext(AuthContext);
     const [theme, setTheme] = useState('default');
+    const [matrixUnlocked, setMatrixUnlocked] = useState(false);
     const themeStorageKey = user ? `mlQuizTheme_user_${user.id}` : null;
 
     useEffect(() => {
@@ -31,7 +34,27 @@ const MainLayout = () => {
         }
     }, [theme, themeStorageKey]);
 
+    useEffect(() => {
+        const fetchOwnedItems = async () => {
+            setMatrixUnlocked(false);
+            if (!user || user.role !== 'student') return;
+            try {
+                const authToken = localStorage.getItem('token') || token;
+                if (!authToken) return;
+                const res = await api.get('/api/shop/items', {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+                setMatrixUnlocked(res.data.includes('theme_matrix'));
+            } catch (error) {
+                console.error('Error loading owned items in layout:', error);
+            }
+        };
+
+        fetchOwnedItems();
+    }, [user, token]);
+
     const handleEquipTheme = (newTheme) => {
+        if (newTheme === 'matrix' && !matrixUnlocked) return;
         setTheme(newTheme);
     };
 
@@ -47,7 +70,13 @@ const MainLayout = () => {
 
             {theme === 'matrix' && <MatrixRain active={true} />}
             
-            <Navigation user={user} logout={logout} onThemeChange={handleEquipTheme} currentTheme={theme} />
+            <Navigation
+                user={user}
+                logout={logout}
+                onThemeChange={handleEquipTheme}
+                currentTheme={theme}
+                matrixUnlocked={matrixUnlocked}
+            />
             
             <main className="content">
                 <Routes>
@@ -63,6 +92,7 @@ const MainLayout = () => {
                                 user={user} 
                                 onUpdateUser={updateUser} 
                                 onEquipTheme={handleEquipTheme} 
+                                onMatrixUnlock={() => setMatrixUnlocked(true)}
                             />
                         } 
                     />
@@ -99,25 +129,30 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <Routes>
-                    <Route path="/login" element={<LoginWrapper />} />
-                    <Route 
-                        path="/teacher" 
-                        element={
-                            <ProtectedRoute role="teacher">
-                                <TeacherDashboard />
-                            </ProtectedRoute>
-                        } 
-                    />
-                    <Route 
-                        path="/*" 
-                        element={
-                            <ProtectedRoute>
-                                <MainLayout />
-                            </ProtectedRoute>
-                        } 
-                    />
-                </Routes>
+                <div className="app-shell">
+                    <div className="app-routes">
+                        <Routes>
+                            <Route path="/login" element={<LoginWrapper />} />
+                            <Route 
+                                path="/teacher" 
+                                element={
+                                    <ProtectedRoute role="teacher">
+                                        <TeacherDashboard />
+                                    </ProtectedRoute>
+                                } 
+                            />
+                            <Route 
+                                path="/*" 
+                                element={
+                                    <ProtectedRoute>
+                                        <MainLayout />
+                                    </ProtectedRoute>
+                                } 
+                            />
+                        </Routes>
+                    </div>
+                    <Footer />
+                </div>
             </Router>
         </AuthProvider>
     );

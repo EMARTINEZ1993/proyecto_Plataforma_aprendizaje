@@ -3,7 +3,7 @@ import { shopItems } from '../data/shopItems';
 import { soundManager } from '../utils/SoundManager';
 import { api } from '../utils/api';
 
-export default function Shop({ user, onUpdateUser, onEquipTheme }) {
+export default function Shop({ user, onUpdateUser, onEquipTheme, onMatrixUnlock }) {
     const [ownedItems, setOwnedItems] = useState({});
     const [loading, setLoading] = useState(true);
     const [msg, setMsg] = useState(null);
@@ -22,6 +22,9 @@ export default function Shop({ user, onUpdateUser, onEquipTheme }) {
             const ownedMap = {};
             res.data.forEach(id => ownedMap[id] = true);
             setOwnedItems(ownedMap);
+            if (ownedMap.theme_matrix) {
+                onMatrixUnlock?.();
+            }
             setLoading(false);
         } catch (error) {
             console.error("Error fetching items:", error);
@@ -50,6 +53,9 @@ export default function Shop({ user, onUpdateUser, onEquipTheme }) {
             setMsg({ type: 'success', text: `¡Has comprado ${item.name}!` });
             
             setOwnedItems(prev => ({ ...prev, [item.id]: true }));
+            if (item.id === 'theme_matrix') {
+                onMatrixUnlock?.();
+            }
             
             onUpdateUser({ ...user, points: user.points - item.price });
             
